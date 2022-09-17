@@ -10,6 +10,8 @@ const xss = require("xss-clean");
 const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
 
+const morgan = require("morgan");
+
 const notFoundMiddleware = require("./middlewares/not-found");
 const errorHandleMiddleware = require("./middlewares/error-handler");
 
@@ -18,6 +20,7 @@ const connectDB = require("./db/connect");
 
 const app = express();
 
+app.use(morgan("tiny"));
 app.use(express.json());
 
 app.get("/", (req, res) => {
