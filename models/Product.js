@@ -33,8 +33,8 @@ const ProductSchema = new mongoose.Schema(
     },
     company: { type, required: true },
     colors: { type: [String], required: true },
-    features: { type: Boolean, required: true },
-    freeShipping: { type: Boolean, required: true },
+    features: { type: Boolean },
+    freeShipping: { type: Boolean, default: false },
     averageRating: { type: Number, default: 0 },
     inventory: {
       type: Number,
