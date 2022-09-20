@@ -1,5 +1,4 @@
 const { StatusCodes } = require("http-status-codes");
-const connectDataBase = require("../db/connect");
 const CustomAIPError = require("../errors");
 const User = require("../models/User");
 const { attachCookiesToResponse } = require("../utils");
@@ -29,12 +28,36 @@ const register = async (req, res) => {
 // login Func
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email, password });
-  res.status(StatusCodes.OK).json({ message: "User Login Successful", user });
+
+  if (!email || !password) {
+    throw new CustomAIPError.BadRequestError(
+      "Please enter a valid email and password"
+    );
+  }
+
+  const user = await User.findOne({ email });
+  if (!user)
+    throw new CustomAIPError.UnauthenticatedError("Invalid Credentials");
+
+  const isPasswordCorrect = await user.comparePassword(password);
+  if (!isPasswordCorrect)
+    throw new CustomAIPError.UnauthenticatedError("Invalid Credentials");
+
+  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+
+  attachCookiesToResponse({ res, user: tokenUser });
+
+  res
+    .status(StatusCodes.OK)
+    .json({ message: "User Login Successful", user: tokenUser });
 };
 
 // logout Func
 const logout = async (req, res) => {
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
   res.status(StatusCodes.OK).json({ message: "User Logout Successful" });
 };
 
