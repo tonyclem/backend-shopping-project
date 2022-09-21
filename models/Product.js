@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema(
         "Women Shoes",
       ],
     },
-    company: { type, required: true },
+    company: { type: String, required: true },
     colors: { type: [String], required: true },
     features: { type: Boolean },
     freeShipping: { type: Boolean, default: false },
